@@ -14,6 +14,7 @@ class RandomGeneration:
     def generate_random(self, start=0, end=1):
         return random.randint(start, end)
 
-    def generate_time(self, max_time):
-        s = self.generate_random(end=max_time)
+    def generate_time(self, max_time, random=True):
+        s = self.generate_random(end=max_time) if random else max_time
         time.sleep(s*self.time_unit)
+        return s*self.time_unit

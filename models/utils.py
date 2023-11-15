@@ -1,9 +1,4 @@
 from copy import deepcopy
-from time import time_ns
-
-def tprint(text):
-    time_text = "".join(str(time_ns())[7:14])
-    print(f"[{time_text}] {text}")
 
 def parse_clients_params(params):
     clients_params = deepcopy(params)
