@@ -3,15 +3,15 @@ from models.generation import RandomGeneration
 from threading import Lock, Thread
 from models.client import Client, CATEGORIES
 from models.queue import Queue
-from time import time_ns
 
 class Clients(RandomGeneration, Thread):
-    def __init__(self, queue: Queue, seed: int, time_unit: int, clients: int, max_interval: int):
+    def __init__(self, queue: Queue, seed: int, time_unit: int, clients: int, permanence: int, max_interval: int):
         RandomGeneration.__init__(self, seed, time_unit)
         Thread.__init__(self)
 
         self.queue = queue
         self.total_clients = clients
+        self.permanence = permanence
         self.max_interval = max_interval
         self._executor = ThreadPoolExecutor(max_workers=clients)
 
@@ -21,19 +21,15 @@ class Clients(RandomGeneration, Thread):
     def action(self, client: Client):
         self.queue.add(client)
         print(f"[Pessoa {client.id} / {client.category}] Aguardando na fila")
-
-        start = time_ns()
-        client.semaphore.acquire()
-        end = time_ns()
+        client.wait()
+        
         print(f"[Pessoa {client.id} / {client.category}] Entrou na Ixfera (quantidade = {client.ticket.occupation})")
-        client.ticket.semaphore.acquire()
+        self.generate_time(self.permanence, random=False)
+        client.leave()
         print(f"[Pessoa {client.id} / {client.category}] Saiu da Ixfera (quantidade = {client.ticket.occupation})")
 
-        total_wait = end - start
-        client.update_waiting(total_wait)
-
         with self.data_lock:
-            self.data.append(client.to_dict())
+            self.data.append(client.info())
 
     def new_client(self, client_id: int, client_category: str):
         self.generate_time(self.max_interval)

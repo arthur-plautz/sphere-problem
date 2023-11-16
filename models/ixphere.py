@@ -3,12 +3,11 @@ from models.ticket import Ticket
 from threading import Thread
 
 class Ixphere(RandomGeneration, Thread):
-    def __init__(self, queue, seed, time_unit, permanence, capacity):
+    def __init__(self, queue, seed, time_unit, capacity):
         RandomGeneration.__init__(self, seed, time_unit)
         Thread.__init__(self)
 
         self.queue = queue
-        self.permanence = permanence
         self.capacity = capacity
 
         self._reset_experience()
@@ -22,9 +21,11 @@ class Ixphere(RandomGeneration, Thread):
             tickets = []
             for _ in range(self.capacity):
                 if self.experience:
+                    if self.queue.empty:
+                        break
                     client = self.queue.next()
                     if client.category != self.experience:
-                        break;
+                        break
                 else:
                     client = self.queue.next()
                     self.experience = client.category
@@ -34,12 +35,11 @@ class Ixphere(RandomGeneration, Thread):
                 tickets.append(ticket)
 
                 client = self.queue.remove()
-                client.give_ticket(ticket)
+                client.receive_ticket(ticket)
                 client.semaphore.release()
 
-            self.generate_time(self.permanence, random=False)
             for ticket in tickets:
-                ticket.semaphore.release()
+                ticket.semaphore.acquire()
             print(f"[Ixfera] Pausando a experiencia {self.experience}")
             self._reset_experience()
             experiences += 1

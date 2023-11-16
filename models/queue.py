@@ -25,6 +25,7 @@ class Queue:
     def next(self):
         self.semaphore.acquire()
         with self.lock:
-            client = self._data[0]
             self.semaphore.release()
-            return client
+            if len(self._data) > 0:
+                client = self._data[0]
+                return client

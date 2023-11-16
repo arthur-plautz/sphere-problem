@@ -2,13 +2,13 @@ from copy import deepcopy
 
 def parse_clients_params(params):
     clients_params = deepcopy(params)
-    del clients_params['permanence']
     del clients_params['capacity']
     return clients_params
 
 def parse_ixphere_params(params):
     ixphere_params = deepcopy(params)
     del ixphere_params['clients']
+    del ixphere_params['permanence']
     del ixphere_params['max_interval']
     return ixphere_params
 
