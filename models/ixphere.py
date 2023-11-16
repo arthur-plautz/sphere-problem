@@ -1,21 +1,30 @@
 from models.generation import RandomGeneration
 from models.ticket import Ticket
 from threading import Thread
+from time import perf_counter
 
 class Ixphere(RandomGeneration, Thread):
-    def __init__(self, queue, seed, time_unit, capacity):
+    def __init__(self, queue, seed, time_unit, permanence, capacity):
         RandomGeneration.__init__(self, seed, time_unit)
         Thread.__init__(self)
 
         self.queue = queue
+        self.permanence = permanence
         self.capacity = capacity
+        self.occupation = 0
 
         self._reset_experience()
+
+    def stats(self, total_time, experiences):
+        self.occupation = (experiences * self.permanence * self.time_unit) / total_time
+        print(f"\nTaxa de ocupacao: {str(self.occupation)[:4]}")
 
     def _reset_experience(self):
         self.experience = None
 
     def run(self):
+        start = perf_counter()
+
         experiences = 0
         while (not self.queue.empty) or experiences == 0:
             tickets = []
@@ -43,3 +52,8 @@ class Ixphere(RandomGeneration, Thread):
             print(f"[Ixfera] Pausando a experiencia {self.experience}")
             self._reset_experience()
             experiences += 1
+
+        end = perf_counter()
+        total_time = end - start
+
+        self.stats(total_time, experiences)

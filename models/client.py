@@ -1,5 +1,5 @@
 from threading import Semaphore
-from time import time_ns
+from time import perf_counter
 
 CATEGORIES = ['A', 'B', 'C']
 
@@ -12,9 +12,9 @@ class Client:
         self.ticket = None
 
     def wait(self):
-        start = time_ns()
+        start = perf_counter()
         self.semaphore.acquire()
-        end = time_ns()
+        end = perf_counter()
         self.queue_wait = end - start
 
     def leave(self):

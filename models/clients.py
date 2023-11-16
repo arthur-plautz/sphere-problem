@@ -18,6 +18,22 @@ class Clients(RandomGeneration, Thread):
         self.data = []
         self.data_lock = Lock()
 
+    def stats(self):
+        categories = dict.fromkeys(CATEGORIES)
+        for c in categories:
+            categories[c] = []
+
+        for client in self.data:
+            client_category = client.get('category')
+            client_wait = client.get('wait')
+            categories[client_category].append(client_wait)
+        
+        print("\nTempo medio de espera:")
+        for category, wait in categories.items():
+            n = len(wait)
+            w = sum(wait)/n
+            print(f"Faixa {category}: {str(w)[:4]}")
+
     def action(self, client: Client):
         self.queue.add(client)
         print(f"[Pessoa {client.id} / {client.category}] Aguardando na fila")
@@ -46,3 +62,5 @@ class Clients(RandomGeneration, Thread):
         for i in range(self.total_clients):
             self.new_client(i, categories[i])
         self._executor.shutdown()
+        self.stats()
+
