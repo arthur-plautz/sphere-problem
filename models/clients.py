@@ -30,8 +30,11 @@ class Clients(RandomGeneration, Thread):
         
         print("\nTempo medio de espera:")
         for category, wait in categories.items():
-            n = len(wait)
-            w = sum(wait)/n
+            if wait:
+                n = len(wait)
+                w = sum(wait)/n
+            else:
+                w = '-'
             print(f"Faixa {category}: {str(w)[:4]}")
 
     def action(self, client: Client):
@@ -54,7 +57,8 @@ class Clients(RandomGeneration, Thread):
 
     def generate_categories(self):
         n_categories = len(CATEGORIES)
-        client_categories = [CATEGORIES[i % n_categories] for i in range(self.total_clients)]
+        possible_categories = self.total_clients if self.total_clients > n_categories else n_categories
+        client_categories = [CATEGORIES[i % n_categories] for i in range(possible_categories)]
         return self.shuffle(client_categories)
 
     def run(self):

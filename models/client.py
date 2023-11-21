@@ -18,10 +18,11 @@ class Client:
         self.queue_wait = end - start
 
     def leave(self):
-        self.ticket.semaphore.release()
+        self.ticket.leave_show()
 
     def receive_ticket(self, ticket):
         self.ticket = ticket
+        self.semaphore.release()
 
     def info(self):
         return dict(

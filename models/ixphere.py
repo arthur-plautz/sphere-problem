@@ -45,10 +45,9 @@ class Ixphere(RandomGeneration, Thread):
 
                 client = self.queue.remove()
                 client.receive_ticket(ticket)
-                client.semaphore.release()
 
             for ticket in tickets:
-                ticket.semaphore.acquire()
+                ticket.end_show()
             print(f"[Ixfera] Pausando a experiencia {self.experience}")
             self._reset_experience()
             experiences += 1
