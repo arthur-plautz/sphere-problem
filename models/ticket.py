@@ -6,6 +6,7 @@ class Ticket:
         self.occupation = occupation
 
     def leave_show(self):
+        self.occupation -= 1
         self.semaphore.release()
 
     def end_show(self):
